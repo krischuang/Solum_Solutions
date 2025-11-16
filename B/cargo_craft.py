@@ -7,7 +7,8 @@ Declaration:
     a: 4 unit using times.
     b: 6 unit using times.
     n: input value (total propulsion units).
-    t: input times.
+    t: number of test cases.
+    k: (a + b) times.
 
 Limitation:
     1. This solution uses only O(1) operations per test case.
@@ -24,10 +25,10 @@ Solution strategy:
 
     Minimum crafts:
         1. Each craft uses at most 6 units: k ≥ ceil(n / 6).
-        2. This bound is always achievable depending on n mod 6:
-            - r = 0: all 6-unit crafts.
-            - r = 2: the rest sixes + two fours.
-            - r = 4: the rest sixes + one four.
+        2. This bound is always achievable depending on n % 6:
+            - n % 6 = 0: all 6-unit crafts.
+            - n % 6 = 2: the rest sixes + two fours.
+            - n % 6 = 4: the rest sixes + one four.
         3. Therefore, min_crafts = ceil(n / 6).
 """
 
