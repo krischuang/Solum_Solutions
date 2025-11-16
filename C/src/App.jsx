@@ -1,59 +1,62 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
-// Hardcode valid credentials for testing
+// These are the test accounts you can use to login
 const VALID_USERS = [
-  {email: 'test@example.com', password: 'Test123!'},
-  {email: 'admin@example.com', password: 'Admin456#'},
-  {email: 'user@example.com', password: 'User789$'}
+  {email: 'test@example.com', password: 'Testtest123!'},
+  {email: 'admin@example.com', password: 'Adminadmin456#'},
+  {email: 'user@example.com', password: 'Useruser789$'}
 ];
 
 function App() {
-  // State management
+  // Keep track of what the user types in the form
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Store any error messages to show the user
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  // Track whether someone is logged in or not
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInEmail, setLoggedInEmail] = useState('');
 
-  /**
-   * Validates email field
-   * Checks if email is not empty and exists in our valid users list
-   */
+  // Check if the email the user entered is valid
   const validateEmail = (emailValue) => {
+    // Make sure they actually typed something
     if (!emailValue.trim()) {
       return 'Email is required.';
     }
 
+    // See if this email exists in our list of users
     const emailExists = VALID_USERS.some(user => user.email === emailValue);
     if (!emailExists) {
       return 'This email does not exist. Please try: test@example.com';
     }
 
+    // All good!
     return '';
   };
 
-  /**
-   * Validates password field
-   * Requirements: 8-16 characters, uppercase, lowercase, number, symbol
-   */
+  // Make sure the password meets all our security requirements
   const validatePassword = (passwordValue) => {
+    // First, check if they typed anything at all
     if (!passwordValue) {
       return 'Password is Required.';
     }
-    
+
+    // Password needs to be the right length (not too short, not too long)
     if (passwordValue.length < 8 || passwordValue.length > 16) {
       return 'Password must be between 8-16 characters.'
     }
 
-    const hasUppercase = /[A-Z]/.test(passwordValue);
-    const hasLowercase = /[a-z]/.test(passwordValue);
-    const hasNumber = /[0-9]/.test(passwordValue);
-    const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(passwordValue);
+    // Check for all the different types of characters we need
+    const hasUppercase = /[A-Z]/.test(passwordValue);  // Like: A, B, C
+    const hasLowercase = /[a-z]/.test(passwordValue);  // Like: a, b, c
+    const hasNumber = /[0-9]/.test(passwordValue);     // Like: 1, 2, 3
+    const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(passwordValue);  // Like: !, @, #
 
+    // Tell the user what's missing in their password
     if (!hasUppercase) {
       return 'Password must contain at least one uppercase letter.'
     }
@@ -67,67 +70,61 @@ function App() {
       return 'Password must contain at least one symbol.'
     }
 
+    // Password looks good!
     return '';
   }
 
-  /**
-   * Checks if the email and password combination is correct
-   */
-  
+  // Check if the email and password match what we have on file
   const checkCredentials = (emailValue, passwordValue) => {
+    // Find the user with this email
     const user = VALID_USERS.find(user => user.email === emailValue);
 
+    // If we found the user but password doesn't match, show an error
     if (user && user.password !== passwordValue) {
       return 'Incorrect password. Please try again.';
     }
 
+    // Everything matches!
     return '';
   }
 
-  /**
-   * Handles from submission
-   * Validates all fields and performs login if valid
-   */
-
+  // This runs when the user clicks the Login button
   const handleSubmit = (e) => {
-    e.preventDefault(); // stops the page from reloading
+    e.preventDefault(); // Stop the page from refreshing
 
-    // Reset errors
+    // Clear out any old error messages
     setEmailError('');
     setPasswordError('');
 
-    // Validate email
+    // Step 1: Check if the email is valid
     const emailErr = validateEmail(email);
     if (emailErr) {
       setEmailError(emailErr);
-      return;
+      return; // Stop here if there's a problem
     }
 
-    // Validate password format
+    // Step 2: Check if the password is strong enough
     const passwordErr = validatePassword(password);
     if (passwordErr) {
       setPasswordError(passwordErr);
-      return;
+      return; // Stop here if password is weak
     }
 
-    // Check if credentials match
+    // Step 3: Check if the email and password match
     const credentialErr = checkCredentials(email, password);
     if (credentialErr) {
       setPasswordError(credentialErr);
-      return;
+      return; // Stop here if credentials don't match
     }
 
-    // Login successful - store email and show welcome message
+    // Success! Log them in and show the welcome screen
     setLoggedInEmail(email);
     setIsLoggedIn(true);
   }
 
-  /**
-   * Handles logout action
-   * Resets all state and returns to login form
-   */
-
+  // This runs when the user clicks the Logout button
   const handleLogout = () => {
+    // Clear everything and go back to the login screen
     setIsLoggedIn(false);
     setLoggedInEmail('');
     setEmail('');
@@ -136,7 +133,7 @@ function App() {
     setPasswordError('');
   };
 
-  // If logged in, show welcome message with user email
+  // If someone is logged in, show them a welcome message
   if (isLoggedIn) {
     return (
       <div className="container">
@@ -158,14 +155,15 @@ function App() {
     );
   }
 
-  // Show login form
+  // If not logged in, show the login form
   return (
     <div className="container">
       <div className="login-card">
         <h2>Login</h2>
         <p className="subtitle">Please enter your credentials</p>
         <form onSubmit={handleSubmit}>
-          {/* Email Field */}
+
+          {/* Email input box */}
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -174,17 +172,18 @@ function App() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                setEmailError('');
+                setEmailError(''); // Clear error when user starts typing
               }}
               className={emailError ? 'error' : ''}
               placeholder='Enter your email'
             />
+            {/* Show error message if there's a problem with email */}
             {emailError && (
               <div className="error-message">{emailError}</div>
             )}
           </div>
-          
-          {/* Password Field */}
+
+          {/* Password input box */}
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -193,14 +192,16 @@ function App() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setPasswordError('');
+                setPasswordError(''); // Clear error when user starts typing
               }}
               className={passwordError ? 'error' : ''}
               placeholder='Enter your password'
             />
+            {/* Show error message if there's a problem with password */}
             {passwordError && (
               <div className="error-message">{passwordError}</div>
             )}
+            {/* Helpful reminder of password rules */}
             <div className="password-requirements">
               Password must contain:
               <ul>
@@ -211,12 +212,12 @@ function App() {
             </div>
           </div>
 
-          {/*Login Button*/}
+          {/* Submit button */}
           <button type="submit" className="login-button">
             Login
           </button>
 
-          {/* Forget Password Link */}
+          {/* Link for users who forgot their password */}
           <div className="forget-password">
             <a href="#" onClick={(e) => e.preventDefault()}>
               Forget password?
