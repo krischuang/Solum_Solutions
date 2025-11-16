@@ -146,9 +146,11 @@ function App() {
             <h1 className='welcome-title'>Welcome!</h1>
             <p className='welcome-email'>{loggedInEmail}</p>
             <button
-              className="loggout-button"
+              className="logout-button"
               onClick={handleLogout}
-            >Logout
+            >
+              <span className="logout-icon">⎋</span>
+              Logout
             </button>
           </div>
         </div>
